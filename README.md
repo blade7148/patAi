@@ -1,7 +1,5 @@
 # Pet AI
 
-![Pet AI Logo](assets/icon/petai_logo1.png)
-
 ## Overview
 Pet AI is an intuitive application designed to help pet owners manage and monitor their pets' health and well-being. With easy-to-use features, you can keep track of your pets and ensure they receive the best care possible.
 
