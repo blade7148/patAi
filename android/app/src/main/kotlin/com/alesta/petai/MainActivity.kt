@@ -1,0 +1,6 @@
+package com.alesta.petai
+
+import io.flutter.embedding.android.FlutterActivity
+
+class MainActivity: FlutterActivity() {
+}

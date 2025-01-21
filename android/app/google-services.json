@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "807810464750",
+    "project_id": "petai-1fc3c",
+    "storage_bucket": "petai-1fc3c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:807810464750:android:775ca5347fed28f4ebacff",
+        "android_client_info": {
+          "package_name": "com.alesta.petai"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCqYkyaQhMaOLsRTIlBG5v3vW0X-ugNtYc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
