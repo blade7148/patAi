@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:petai/view_models/image_controller.dart';
 import 'package:petai/views/widgets/image_widget.dart';

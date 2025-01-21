@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:petai/utils/services/hive_service.dart';
 import 'package:petai/views/pages/home_page.dart';
 import 'package:petai/views/pages/onboarding/welcome_controller.dart';
 import 'package:rive/rive.dart';

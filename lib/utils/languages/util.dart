@@ -2,9 +2,9 @@ import 'dart:io';
 
 String getLanguageCode() {
   String deviceLanguage = Platform.localeName.substring(0, 2);
-  // if (deviceLanguage != "tr") {
-  //   deviceLanguage = "en";
-  // }
+  if (deviceLanguage != "tr") {
+    deviceLanguage = "en";
+  }
   return "en";
 }
 
