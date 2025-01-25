@@ -1,1 +1,46 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"petai-1fc3c","appId":"1:807810464750:android:775ca5347fed28f4ebacff","fileOutput":"android/app/google-services.json"}},"ios":{"default":{"projectId":"petai-1fc3c","appId":"1:807810464750:ios:a010962d69dbff57ebacff","uploadDebugSymbols":false,"fileOutput":"ios/Runner/GoogleService-Info.plist"}},"dart":{"lib/firebase_options.dart":{"projectId":"petai-1fc3c","configurations":{"android":"1:807810464750:android:775ca5347fed28f4ebacff","ios":"1:807810464750:ios:a010962d69dbff57ebacff"}}}}}}
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "petai-1fc3c",
+          "appId": "1:807810464750:android:775ca5347fed28f4ebacff",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "ios": {
+        "default": {
+          "projectId": "petai-1fc3c",
+          "appId": "1:807810464750:ios:a010962d69dbff57ebacff",
+          "uploadDebugSymbols": false,
+          "fileOutput": "ios/Runner/GoogleService-Info.plist"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "petai-1fc3c",
+          "configurations": {
+            "android": "1:807810464750:android:775ca5347fed28f4ebacff",
+            "ios": "1:807810464750:ios:a010962d69dbff57ebacff"
+          }
+        }
+      }
+    }
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log"
+      ],
+      "predeploy": [
+        "npm --prefix \"$RESOURCE_DIR\" run lint",
+        "npm --prefix \"$RESOURCE_DIR\" run build"
+      ]
+    }
+  ]
+}

@@ -13,20 +13,6 @@ class FireStoreService {
   final _firestore = FirebaseFirestore.instance;
   final _storageRef = FirebaseStorage.instance.ref();
 
-  // print the documents in the collection
-  Future<void> printData() async {
-    final reference = _firestore
-        .collection("users")
-        .doc(FirebaseAuth.instance.currentUser?.uid)
-        .collection("datas");
-
-    final snapshot = await reference.get();
-
-    for (final doc in snapshot.docs) {
-      print(doc.data());
-    }
-  }
-
   Future<void> setData(AnalyzeModel data, Uint8List petImage) async {
     final reference = _firestore
         .collection("users")
