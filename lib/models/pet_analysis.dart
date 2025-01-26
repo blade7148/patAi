@@ -10,12 +10,19 @@ class AnalyzeModel {
   AnalyzeModel(
       {this.pet, this.check, this.define, this.conclusion, this.disclaimer});
 
-  AnalyzeModel.fromJson(Map<String, dynamic> json) {
-    pet = json['pet'] != null ? Pet.fromJson(json['pet']) : null;
-    check = json['check'] != null ? Check.fromJson(json['check']) : null;
-    define = json['define'] != null ? Define.fromJson(json['define']) : null;
-    conclusion = json['conclusion'];
-    disclaimer = json['disclaimer'];
+  AnalyzeModel.fromJson(Map<Object?, Object?> json) {
+    final Map<String, dynamic> data = Map<String, dynamic>.from(json);
+    pet = data['pet'] != null
+        ? Pet.fromJson(Map<String, dynamic>.from(data['pet'] as Map))
+        : null;
+    check = data['check'] != null
+        ? Check.fromJson(Map<String, dynamic>.from(data['check'] as Map))
+        : null;
+    define = data['define'] != null
+        ? Define.fromJson(Map<String, dynamic>.from(data['define'] as Map))
+        : null;
+    conclusion = data['conclusion'] as String?;
+    disclaimer = data['disclaimer'] as String?;
   }
 
   Map<String, dynamic> toJson() {
@@ -60,15 +67,16 @@ class Check {
       this.temperatureFit,
       this.toys});
 
-  Check.fromJson(Map<String, dynamic> json) {
-    medicalConditions = json['medical_conditions'].cast<String>();
-    psychologicalBehaviors = json['psychological_behaviors'].cast<String>();
-    careSuggestions = json['care_suggestions'].cast<String>();
-    entertainment = json['entertainment'];
-    nutritionAndDiet = json['nutrition_and_diet'];
-    environment = json['environment'];
-    temperatureFit = json['temperature_fit'];
-    toys = json['toys'];
+  Check.fromJson(Map<Object?, Object?> json) {
+    final Map<String, dynamic> data = Map<String, dynamic>.from(json);
+    medicalConditions = data['medical_conditions'] as List<dynamic>?;
+    psychologicalBehaviors = data['psychological_behaviors'] as List<dynamic>?;
+    careSuggestions = data['care_suggestions'] as List<dynamic>?;
+    entertainment = data['entertainment'] as String?;
+    nutritionAndDiet = data['nutrition_and_diet'] as String?;
+    environment = data['environment'] as String?;
+    temperatureFit = data['temperature_fit'] as String?;
+    toys = data['toys'] as String?;
   }
 
   Map<String, dynamic> toJson() {
@@ -97,11 +105,13 @@ class Define {
 
   Define({this.breed, this.age, this.characteristics});
 
-  Define.fromJson(Map<String, dynamic> json) {
-    breed = json['breed'];
-    age = json['age'];
-    characteristics = json['characteristics'] != null
-        ? Characteristics.fromJson(json['characteristics'])
+  Define.fromJson(Map<Object?, Object?> json) {
+    final Map<String, dynamic> data = Map<String, dynamic>.from(json);
+    breed = data['breed'] as String?;
+    age = data['age'] as String?;
+    characteristics = data['characteristics'] != null
+        ? Characteristics.fromJson(
+            Map<String, dynamic>.from(data['characteristics'] as Map))
         : null;
   }
 
@@ -135,12 +145,13 @@ class Characteristics {
       this.uniqueFeatures,
       this.commonIssues});
 
-  Characteristics.fromJson(Map<String, dynamic> json) {
-    furColor = json['fur_color'];
-    size = json['size'];
-    weight = json['weight'];
-    uniqueFeatures = json['unique_features'].cast<String>();
-    commonIssues = json['common_issues'].cast<String>();
+  Characteristics.fromJson(Map<Object?, Object?> json) {
+    final Map<String, dynamic> data = Map<String, dynamic>.from(json);
+    furColor = data['fur_color'] as String?;
+    size = data['size'] as String?;
+    weight = data['weight'] as String?;
+    uniqueFeatures = data['unique_features'] as List<dynamic>?;
+    commonIssues = data['common_issues'] as List<dynamic>?;
   }
 
   Map<String, dynamic> toJson() {

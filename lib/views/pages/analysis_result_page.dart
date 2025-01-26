@@ -1,64 +1,3 @@
-// import 'package:flutter/material.dart';
-
-// import 'package:get/get.dart';
-// import 'package:petai/view_models/ai_controller.dart';
-// import 'package:petai/views/pages/home_page.dart';
-
-// class AnalysisResultWidget extends StatelessWidget {
-//   const AnalysisResultWidget({Key? key}) : super(key: key);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: const Text('Analysis Result'),
-//         backgroundColor: Colors.deepOrangeAccent,
-//         leading: IconButton(
-//           icon: const Icon(Icons.arrow_back),
-//           onPressed: () {
-//             Get.offAll(() => const HomePage());
-//           },
-//         ),
-//       ),
-//       body: Obx(
-//         () => SingleChildScrollView(
-//           child: Card(
-//             elevation: 0,
-//             color: Colors.transparent,
-//             child: Padding(
-//               padding: const EdgeInsets.all(8.0),
-//               child: Column(
-//                 crossAxisAlignment: CrossAxisAlignment.start,
-//                 children: [
-//                   Text(
-//                     "${'ai_name'.tr}:",
-//                     style: const TextStyle(
-//                       fontWeight: FontWeight.bold,
-//                       fontSize: 20,
-//                     ),
-//                   ),
-//                   // Markdown(
-//                   //   shrinkWrap: true,
-//                   //   physics: const NeverScrollableScrollPhysics(),
-//                   //   data: Get.find<AIController>().aiResponse,
-//                   // ),
-//                   Text(
-//                     Get.find<AIController>().aiResponse,
-//                     style: const TextStyle(
-//                       fontSize: 16,
-//                       color: Colors.black87,
-//                     ),
-//                   )
-//                 ],
-//               ),
-//             ),
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:petai/models/pet_analysis.dart';
@@ -74,18 +13,30 @@ class PetAnalysis extends StatelessWidget {
     return Obx(() {
       final response = Get.find<AIController>().aiResponse;
 
+      // Check if the entire response is null or empty
+      if (response.define == null &&
+          response.check == null &&
+          response.conclusion == null) {
+        // Show error dialog and navigate back
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          Get.back();
+          Get.defaultDialog(
+            title: 'Something went wrong',
+            middleText: 'Failed to generate pet analysis. Please try again.',
+            textConfirm: 'OK',
+            confirmTextColor: Colors.white,
+            onConfirm: () {
+              Get.back();
+            },
+          );
+        });
+      }
+
       return Scaffold(
         appBar: AppBar(
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () {
-              // Handle back button press
-              Get.offAll(() => const HomePage());
-            },
-          ),
           title: Text(
-              'Analysis Result • ${response.define?.breed ?? 'Unknown Pet'}'),
-          centerTitle: true,
+            'Analysis Result • ${response.pet?.name ?? 'Unknown Name'}',
+          ),
         ),
         body: SafeArea(
           child: SingleChildScrollView(
@@ -94,67 +45,78 @@ class PetAnalysis extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Pet • ${response.define?.breed ?? 'Unknown Pet'}',
-                      style: const TextStyle(color: Colors.grey)),
-                  const SizedBox(height: 16),
+                  if (response.define?.breed != null) ...[
+                    Text('Pet • ${response.define!.breed}',
+                        style: const TextStyle(color: Colors.grey)),
+                    const SizedBox(height: 16),
+                  ],
 
                   // Tags
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      _buildTag(
-                          Icons.pets,
-                          response.define?.characteristics?.size ??
-                              'Unknown Size'),
-                      _buildTag(
-                          Icons.monitor_weight,
-                          response.define?.characteristics?.weight == 'null'
-                              ? 'Unknown Weight'
-                              : '${response.define?.characteristics?.weight} kg'),
-                      _buildTag(Icons.calendar_today,
-                          response.define?.age ?? 'Unknown Age'),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
+                  if (response.define?.characteristics != null) ...[
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        if (response.define?.characteristics?.size != null)
+                          _buildTag(Icons.pets,
+                              response.define?.characteristics?.size),
+                        if (response.define?.characteristics?.weight != null &&
+                            response.define?.characteristics?.weight != 'null')
+                          _buildTag(Icons.monitor_weight,
+                              '${response.define?.characteristics?.weight} kg'),
+                        if (response.define?.age != null)
+                          _buildTag(Icons.calendar_today, response.define?.age),
+                      ],
+                    ),
+                  ],
 
-                  if (response.check?.medicalConditions?[0] != 'null')
-                    _buildAlertCard(),
+                  // if (response.check?.medicalConditions?[0] != 'null')
+                  //   _buildAlertCard(),
 
                   const SizedBox(height: 16),
 
                   // About section
-                  _buildSectionCard(
-                    'About',
-                    '${response.define?.characteristics?.uniqueFeatures?.join(', ') ?? "No unique features available"}. '
-                        '${response.define?.breed ?? 'This breed'} is known for its '
-                        '${response.define?.characteristics?.uniqueFeatures?.firstOrNull?.toLowerCase() ?? 'unique'} '
-                        'nature and makes an excellent family pet.',
-                  ),
+                  if (response.define?.characteristics?.uniqueFeatures !=
+                          null &&
+                      response.define!.characteristics!.uniqueFeatures!
+                          .isNotEmpty &&
+                      response.define!.characteristics!.uniqueFeatures![0] !=
+                          'null')
+                    _buildSectionCard(
+                      'About',
+                      '${response.define?.breed ?? 'This breed'} is known for its '
+                          '${response.define!.characteristics!.uniqueFeatures!.join(', ')}.',
+                    ),
                   const SizedBox(height: 16),
 
                   // Details section
-                  _buildDetailsCard(response),
+                  if (response.check != null) _buildDetailsCard(response),
                   const SizedBox(height: 16),
 
                   // Characteristics section
-                  _buildCharacteristicsCard(response),
+                  if (response.define?.characteristics != null)
+                    _buildCharacteristicsCard(response),
                   const SizedBox(height: 16),
 
                   // Health Issues section
-                  _buildHealthIssuesCard(response),
+                  if (response.check != null ||
+                      response.define?.characteristics?.commonIssues != null)
+                    _buildHealthIssuesCard(response),
                   const SizedBox(height: 16),
 
                   // Care Suggestions section
-                  _buildCareSuggestionsCard(response),
+                  if (response.check?.careSuggestions != null)
+                    _buildCareSuggestionsCard(response),
                   const SizedBox(height: 16),
 
                   // Conclusion section
-                  _buildConclusionCard(response),
+                  if (response.conclusion != null)
+                    _buildConclusionCard(response),
                   const SizedBox(height: 16),
 
                   // Disclaimer
-                  _buildDisclaimerCard(response),
+                  if (response.disclaimer != null)
+                    _buildDisclaimerCard(response),
                 ],
               ),
             ),
@@ -166,7 +128,7 @@ class PetAnalysis extends StatelessWidget {
   }
 
   Widget _buildTag(IconData icon, String? text) {
-    if (text == null) return const SizedBox.shrink();
+    if (text == null || text == 'null') return const SizedBox.shrink();
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
@@ -216,6 +178,7 @@ class PetAnalysis extends StatelessWidget {
   }
 
   Widget _buildSectionCard(String title, String content) {
+    if (content.isEmpty) return const SizedBox.shrink();
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -234,6 +197,8 @@ class PetAnalysis extends StatelessWidget {
   }
 
   Widget _buildDetailsCard(AnalyzeModel resp) {
+    if (resp.check == null) return const SizedBox.shrink();
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -243,27 +208,26 @@ class PetAnalysis extends StatelessWidget {
             const Text('Details',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 16),
-            _buildDetailRow(Icons.thermostat, 'Temperature',
-                resp.check?.temperatureFit ?? 'No temperature information'),
-            _buildDetailRow(
-                Icons.pets, 'Breed', resp.define?.breed ?? 'Unknown Breed'),
-            _buildDetailRow(Icons.color_lens, 'Fur Color',
-                resp.define?.characteristics?.furColor ?? 'Unknown Color'),
-            _buildDetailRow(
-              Icons.toys,
-              'Toys',
-              resp.check?.toys ?? 'No toy recommendations',
-            ),
-            _buildDetailRow(
-              Icons.restaurant,
-              'Nutrition',
-              resp.check?.nutritionAndDiet ?? 'No nutrition information',
-            ),
-            _buildDetailRow(
-              Icons.home,
-              'Environment',
-              resp.check?.environment ?? 'No environment information',
-            ),
+            if (resp.check?.temperatureFit != null &&
+                resp.check?.temperatureFit != 'null')
+              _buildDetailRow(
+                  Icons.thermostat, 'Temperature', resp.check!.temperatureFit!),
+            if (resp.define?.breed != null && resp.define?.breed != 'null')
+              _buildDetailRow(Icons.pets, 'Breed', resp.define!.breed!),
+            if (resp.define?.characteristics?.furColor != null &&
+                resp.define?.characteristics?.furColor != 'null')
+              _buildDetailRow(Icons.color_lens, 'Fur Color',
+                  resp.define!.characteristics!.furColor!),
+            if (resp.check?.toys != null && resp.check?.toys != 'null')
+              _buildDetailRow(Icons.toys, 'Toys', resp.check!.toys!),
+            if (resp.check?.nutritionAndDiet != null &&
+                resp.check?.nutritionAndDiet != 'null')
+              _buildDetailRow(
+                  Icons.restaurant, 'Nutrition', resp.check!.nutritionAndDiet!),
+            if (resp.check?.environment != null &&
+                resp.check?.environment != 'null')
+              _buildDetailRow(
+                  Icons.home, 'Environment', resp.check!.environment!),
           ],
         ),
       ),
@@ -271,10 +235,15 @@ class PetAnalysis extends StatelessWidget {
   }
 
   Widget _buildCharacteristicsCard(AnalyzeModel resp) {
-    List<dynamic>? features = resp.define?.characteristics?.uniqueFeatures;
+    final features = resp.define?.characteristics;
+    if (features == null) return const SizedBox.shrink();
 
-    if (features == null || features.isEmpty) return const SizedBox.shrink();
-
+    final Map<String, dynamic> characteristics = {
+      'Fur Color': features.furColor,
+      'Size': features.size,
+      'Weight': features.weight,
+      'Unique Features': features.uniqueFeatures?.join(', ') ?? '',
+    };
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -284,9 +253,9 @@ class PetAnalysis extends StatelessWidget {
             const Text('Characteristics',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 16),
-            ...features
-                .map((feature) =>
-                    _buildDetailRow(Icons.check_circle, feature, ''))
+            ...characteristics.entries
+                .map((entry) =>
+                    _buildDetailRow(Icons.check_circle, entry.key, entry.value))
                 .toList(),
           ],
         ),
@@ -295,6 +264,15 @@ class PetAnalysis extends StatelessWidget {
   }
 
   Widget _buildHealthIssuesCard(AnalyzeModel resp) {
+    if ((resp.check?.medicalConditions == null ||
+            resp.check!.medicalConditions![0] == 'null') &&
+        (resp.check?.psychologicalBehaviors == null ||
+            resp.check!.psychologicalBehaviors![0] == 'null') &&
+        (resp.define?.characteristics?.commonIssues == null ||
+            resp.define!.characteristics!.commonIssues![0] == 'null')) {
+      return const SizedBox.shrink();
+    }
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -304,23 +282,18 @@ class PetAnalysis extends StatelessWidget {
             const Text('Health Issues',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 16),
-            _buildDetailRow(
-                Icons.medical_services,
-                'Medical Conditions',
-                resp.check?.medicalConditions?[0] == 'null'
-                    ? 'No known conditions'
-                    : resp.check?.medicalConditions?.join(', ')),
-            _buildDetailRow(
-                Icons.psychology,
-                'Psychological Behaviors',
-                resp.check?.psychologicalBehaviors?[0] == 'null'
-                    ? 'No known behaviors'
-                    : resp.check?.psychologicalBehaviors?.join(', ')),
-            _buildDetailRow(
-                Icons.warning,
-                'Common Issues',
-                resp.define?.characteristics?.commonIssues?.join(', ') ??
-                    'No known issues'),
+            if (resp.check?.medicalConditions != null &&
+                resp.check!.medicalConditions![0] != 'null')
+              _buildDetailRow(Icons.medical_services, 'Medical Conditions',
+                  resp.check!.medicalConditions!.join(', ')),
+            if (resp.check?.psychologicalBehaviors != null &&
+                resp.check!.psychologicalBehaviors![0] != 'null')
+              _buildDetailRow(Icons.psychology, 'Psychological Behaviors',
+                  resp.check!.psychologicalBehaviors!.join(', ')),
+            if (resp.define?.characteristics?.commonIssues != null &&
+                resp.define!.characteristics!.commonIssues![0] != 'null')
+              _buildDetailRow(Icons.warning, 'Common Issues',
+                  resp.define!.characteristics!.commonIssues!.join(', ')),
           ],
         ),
       ),
@@ -329,7 +302,9 @@ class PetAnalysis extends StatelessWidget {
 
   Widget _buildCareSuggestionsCard(AnalyzeModel resp) {
     List<dynamic>? suggestions = resp.check?.careSuggestions;
-    if (suggestions == null || suggestions.isEmpty) {
+    if (suggestions == null ||
+        suggestions.isEmpty ||
+        suggestions[0] == 'null') {
       return const SizedBox.shrink();
     }
 
@@ -342,13 +317,14 @@ class PetAnalysis extends StatelessWidget {
             const Text('Care Suggestions',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 16),
-            if (suggestions[0] != 'null')
-              ...suggestions
-                  .map((suggestion) =>
-                      _buildDetailRow(Icons.lightbulb, suggestion, ''))
-                  .toList(),
-            _buildDetailRow(Icons.sports_esports, 'Entertainment',
-                resp.check?.entertainment ?? 'No entertainment suggestions'),
+            ...suggestions
+                .map((suggestion) =>
+                    _buildDetailRow(Icons.lightbulb, suggestion, ''))
+                .toList(),
+            if (resp.check?.entertainment != null &&
+                resp.check?.entertainment != 'null')
+              _buildDetailRow(Icons.sports_esports, 'Entertainment',
+                  resp.check!.entertainment!),
           ],
         ),
       ),
@@ -356,8 +332,9 @@ class PetAnalysis extends StatelessWidget {
   }
 
   Widget _buildConclusionCard(AnalyzeModel resp) {
-    String? conclusion = resp.conclusion;
-    if (conclusion == null) return const SizedBox.shrink();
+    if (resp.conclusion == null || resp.conclusion!.isEmpty) {
+      return const SizedBox.shrink();
+    }
 
     return Card(
       child: Padding(
@@ -368,7 +345,7 @@ class PetAnalysis extends StatelessWidget {
             const Text('Conclusion',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
-            Text(conclusion),
+            Text(resp.conclusion!),
           ],
         ),
       ),
@@ -376,8 +353,9 @@ class PetAnalysis extends StatelessWidget {
   }
 
   Widget _buildDisclaimerCard(AnalyzeModel resp) {
-    String? disclaimer = resp.disclaimer;
-    if (disclaimer == null) return const SizedBox.shrink();
+    if (resp.disclaimer == null || resp.disclaimer!.isEmpty) {
+      return const SizedBox.shrink();
+    }
 
     return Card(
       color: Colors.yellow[50],
@@ -389,7 +367,7 @@ class PetAnalysis extends StatelessWidget {
             const Text('Disclaimer',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
-            Text(disclaimer),
+            Text(resp.disclaimer!),
           ],
         ),
       ),
@@ -397,7 +375,13 @@ class PetAnalysis extends StatelessWidget {
   }
 
   Widget _buildDetailRow(IconData icon, String title, String? description) {
-    if (description == null) return const SizedBox.shrink();
+    if (description == null ||
+        title.isEmpty ||
+        description.isEmpty ||
+        description == 'null') {
+      return const SizedBox.shrink();
+    }
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
       child: Row(
