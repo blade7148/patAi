@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:petai/utils/constants.dart';
+import 'package:petai/view_models/ai_controller.dart';
 import 'package:petai/view_models/home_controller.dart';
+import 'package:petai/view_models/image_controller.dart';
+import 'package:petai/views/widgets/pet_info_dialog.dart';
 
 class HomeSection extends StatelessWidget {
   const HomeSection({Key? key}) : super(key: key);
@@ -30,49 +34,9 @@ class HomeSection extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
         child: Column(
           children: [
-            // SizedBox(
-            // height: 350,
-            // child: Stack(
-            //   fit: StackFit.expand,
-            //   children: [
-            //     Image.asset(
-            //       "assets/images/home_slider.png",
-            //       fit: BoxFit.cover,
-            //     ),
-            //     Container(
-            //       color: Colors.black.withOpacity(0.3),
-            //       child: const Center(
-            //         child: Column(
-            //           mainAxisAlignment: MainAxisAlignment.center,
-            //           children: [
-            //             Text(
-            //               'Analyze your pet\'s\nbreed and age with\nPet AI',
-            //               style: TextStyle(
-            //                 color: Colors.white,
-            //                 fontSize: 32,
-            //                 fontWeight: FontWeight.w800,
-            //               ),
-            //               textAlign: TextAlign.center,
-            //             ),
-            //             SizedBox(height: 10),
-            //             Text(
-            //               'Upload a photo or take a picture to get started',
-            //               style: TextStyle(
-            //                 color: Colors.white,
-            //                 fontSize: 13,
-            //               ),
-            //               textAlign: TextAlign.center,
-            //             ),
-            //           ],
-            //         ),
-            //       ),
-            //     ),
-            //   ],
-            // ),
-            // ),
             Container(
-              height: 140,
-              padding: const EdgeInsets.all(16.0),
+              height: 140.h,
+              padding: EdgeInsets.all(16.w),
               decoration: BoxDecoration(
                 color: Colors.grey[200],
                 borderRadius: BorderRadius.circular(16.0),
@@ -95,11 +59,22 @@ class HomeSection extends StatelessWidget {
                         size: 32,
                       ),
                       const SizedBox(width: 8.0),
-                      Text(
-                        'analyze'.tr,
-                        style: const TextStyle(
-                          fontSize: 26.0,
-                          fontWeight: FontWeight.w300,
+                      GestureDetector(
+                        onTap: () async {
+                          Get.find<AIController>().resetAiResponse();
+                          final isSelectedSuccessfully =
+                              await Get.find<ImageController>().selectImage();
+                          if (!isSelectedSuccessfully) {
+                            return;
+                          }
+                          showPetInfoSheet();
+                        },
+                        child: Text(
+                          'analyze'.tr,
+                          style: const TextStyle(
+                            fontSize: 26.0,
+                            fontWeight: FontWeight.w300,
+                          ),
                         ),
                       ),
                     ],

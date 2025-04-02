@@ -6,13 +6,16 @@ import 'package:get/get.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:petai/models/pet_analysis.dart';
 import 'package:petai/utils/services/firestore_service.dart';
+import 'package:petai/utils/services/hive_service.dart';
 import 'package:petai/view_models/home_controller.dart';
 import 'package:petai/views/widgets/loader.dart';
+import 'package:petai/views/widgets/rating_dialog.dart';
 
 class AIController extends GetxController {
   final _aiResponse = AnalyzeModel().obs;
   final _isLoading = false.obs;
   final functions = FirebaseFunctions.instance;
+  final _hiveService = HiveService();
 
   Future<void> generateContent(String text, Uint8List petImage) async {
     try {
@@ -32,6 +35,8 @@ class AIController extends GetxController {
         final defineResp = AnalyzeModel.fromJson(response['data']);
         await FireStoreService().setData(defineResp, petImage);
         setAiResponse(defineResp);
+
+        // Show rating dialog if it's the first time
       } else {
         log("AI Error: ${response['error']}");
         // Handle error appropriately

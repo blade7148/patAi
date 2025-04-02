@@ -1,5 +1,6 @@
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:petai/models/tab_model.dart';
 import 'package:petai/view_models/ai_controller.dart';
@@ -23,10 +24,10 @@ class BottomNavBar extends StatelessWidget {
       TabModel(
         null,
         Container(
-          decoration: const BoxDecoration(
-            color: Colors.deepOrangeAccent,
+          decoration: BoxDecoration(
+            color: Theme.of(context).primaryColor,
             shape: BoxShape.circle,
-            boxShadow: [
+            boxShadow: const [
               BoxShadow(
                 color: Colors.black12,
                 blurRadius: 2.0,
@@ -35,8 +36,8 @@ class BottomNavBar extends StatelessWidget {
               ),
             ],
           ),
-          width: 65.0,
-          height: 65.0,
+          width: 65.w,
+          height: 65.w,
           child: RawMaterialButton(
             shape: const CircleBorder(),
             onPressed: () async {
@@ -46,15 +47,11 @@ class BottomNavBar extends StatelessWidget {
               if (!isSelectedSuccessfully) {
                 return;
               }
-              showCustomDialog(
-                onValue: (value) {
-                  if (value == null) return;
-                },
-              );
+              showPetInfoSheet();
             },
-            child: const Icon(
+            child: Icon(
               Icons.photo_camera_rounded,
-              size: 36.0,
+              size: 36.sp,
               color: Colors.white,
             ),
           ),
@@ -67,7 +64,7 @@ class BottomNavBar extends StatelessWidget {
     return ConvexAppBar(
       backgroundColor: Colors.white,
       style: TabStyle.fixedCircle,
-      height: 56,
+      height: 56.h,
       top: -27,
       curveSize: 83,
       elevation: 2,
@@ -79,7 +76,7 @@ class BottomNavBar extends StatelessWidget {
             ),
           )
           .toList(),
-      activeColor: Colors.deepOrange,
+      activeColor: Theme.of(context).primaryColor,
       color: Colors.grey,
       controller: tabController,
       onTap: (index) {

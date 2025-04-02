@@ -1,4 +1,8 @@
+import 'dart:developer';
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:get/get.dart';
+import 'package:petai/views/widgets/rating_dialog.dart';
 
 signInAnonymously() async {
   try {
@@ -12,4 +16,20 @@ signInAnonymously() async {
         print("Unknown error.");
     }
   }
+}
+
+void showRatingDialog() {
+  Get.dialog(
+    RatingDialog(
+      onSubmit: (rating, feedback) async {
+        try {
+          // _hiveService.setHasRated(true);
+          Get.back();
+        } catch (e) {
+          log("Rating Error: $e");
+        }
+      },
+    ),
+    barrierDismissible: false,
+  );
 }

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:petai/models/pet_analysis.dart';
-
 import 'package:petai/view_models/ai_controller.dart';
-import 'package:petai/views/pages/home_page.dart';
+import 'package:petai/views/widgets/error_text.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class PetAnalysis extends StatelessWidget {
   const PetAnalysis({Key? key}) : super(key: key);
@@ -20,14 +20,23 @@ class PetAnalysis extends StatelessWidget {
         // Show error dialog and navigate back
         WidgetsBinding.instance.addPostFrameCallback((_) {
           Get.back();
-          Get.defaultDialog(
-            title: 'Something went wrong',
-            middleText: 'Failed to generate pet analysis. Please try again.',
-            textConfirm: 'OK',
-            confirmTextColor: Colors.white,
-            onConfirm: () {
-              Get.back();
-            },
+          Get.dialog(
+            AlertDialog(
+              title: const Text('Something went wrong'),
+              content: ErrorText(
+                message: 'Failed to generate pet analysis.',
+                onRetry: () {
+                  Get.back();
+                  // You can add retry logic here
+                },
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Get.back(),
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
           );
         });
       }
@@ -41,14 +50,14 @@ class PetAnalysis extends StatelessWidget {
         body: SafeArea(
           child: SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: EdgeInsets.all(16.w),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (response.define?.breed != null) ...[
                     Text('Pet • ${response.define!.breed}',
-                        style: const TextStyle(color: Colors.grey)),
-                    const SizedBox(height: 16),
+                        style: TextStyle(color: Colors.grey, fontSize: 14.sp)),
+                    SizedBox(height: 16.h),
                   ],
 
                   // Tags
@@ -244,6 +253,7 @@ class PetAnalysis extends StatelessWidget {
       'Weight': features.weight,
       'Unique Features': features.uniqueFeatures?.join(', ') ?? '',
     };
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16.0),

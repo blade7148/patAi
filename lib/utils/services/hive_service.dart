@@ -38,4 +38,15 @@ extension UserHiveService on HiveService {
   Future<void> onWelcomeShowed() async {
     await writeData('welcomeShowed', true);
   }
+
+  bool get hasRatedFirstTime => readData('hasRatedFirstTime') ?? false;
+  bool get hasRatedSecondTime => readData('hasRatedSecondTime') ?? false;
+
+  Future<void> setHasRatedFirstTime(bool value) async {
+    await writeData('hasRatedFirstTime', value);
+  }
+
+  Future<void> setHasRatedSecondTime(bool value) async {
+    await writeData('hasRatedSecondTime', value);
+  }
 }
